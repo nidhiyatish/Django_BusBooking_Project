@@ -1,0 +1,23 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+Routes
+{% endblock %}
+
+{% block content %}
+<section class="d-flex justify-content-center my-3">
+    <a href="{% url 'add_route' %}" class="btn btn-success  shadow"
+       style="padding: 10px 50px; font-size: 20px; border-radius: 8px;">
+        Add route
+    </a>
+</section>
+
+<div class="row">
+  {% for route in routes %}
+    {% include "route/includes/route_card.html" %}
+  {% empty %}
+    <p>No Routes found.</p>
+  {% endfor %}
+</div>
+</section>
+{% endblock %}

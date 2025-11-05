@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+Buses
+{% endblock %}
+
+{% block content %}
+<section class="d-flex justify-content-center my-3">
+    <a href="{% url 'add_bus' %}" class="btn btn-success  shadow"
+       style="padding: 10px 50px; font-size: 20px; border-radius: 8px;">
+        Add Bus
+    </a>
+</section>
+
+
+
+<section class="container bus-container">
+<div class="row">
+  {% for bus in buses %}
+    {% include "bus/includes/busCard.html" %}
+  {% empty %}
+    <p>No buses found.</p>
+  {% endfor %}
+</div>
+</section>
+{% endblock %}

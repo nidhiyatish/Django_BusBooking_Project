@@ -1,0 +1,112 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+
+}
+
+
+header#site-header {
+    height: 45px;
+}
+
+main {
+    margin-top: 58px;
+
+    #home-carousel {
+        .custom-carousel img {
+            background-size: cover;
+            background-color: black;
+            height: 100vh;
+            /* full screen height */
+            width: 100%;
+
+        }
+
+    }
+}
+
+#carousel-preview {
+
+    .custom-carousel img {
+        /* height: 200px; */
+        aspect-ratio: 16/4;
+        object-fit: cover;
+        object-position: top;
+    }
+}
+
+
+
+
+/* Fix all cards to same height */
+.carousel-cards-container {
+
+    /*div.card {
+            height: 160px;*/
+    card .card-img-top {
+        height: 120px !important;
+        width: 100%;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px 10px 0 0;
+    }
+}
+
+.bus-container {
+    .bus-vertical-card .bus-img {
+  height: 180px;              /* Fixed image height */
+  object-fit: cover;          /* Crop to fill nicely */
+  object-position: center;
+  border-radius: 8px 8px 0 0;
+}
+
+.bus-vertical-card {
+  transition: transform 0.2s;
+}
+
+.bus-vertical-card:hover {
+  transform: translateY(-4px);
+}
+
+}
+
+#bus-carousel {
+    .custom-carousel img {
+        height: 180px;
+        /* aspect-ratio: 16/4; */
+        object-fit: cover;
+        object-position: top;
+    }
+}
+
+.bus-card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bus-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.bus-img {
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
+}
+
+.bus-card .card-body {
+  padding: 12px 14px;
+}
+
+.bus-card .btn {
+  border-radius: 25px;
+  transition: 0.3s;
+}
+
+.bus-card .btn:hover {
+  transform: scale(1.05);
+}

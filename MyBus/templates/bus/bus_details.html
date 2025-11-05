@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+{{ bus.name|title }}
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-4">
+        <div class="card shadow h-100 p-4">
+            <h3 class="mb-3 text-primary">{{ bus.name|title }}</h3>
+
+            <div class="row">
+                <div class="col-6">
+                    <p class="mb-1"><strong>Bus Number:</strong> {{ bus.reg_no }}</p>
+                    <p class="mb-1"><strong>Type:</strong>
+                        {% if bus.type == 'ac' %}
+                        AC
+                        {% else %}
+                        Non-AC
+                        {% endif %}
+                    </p>
+                    <p class="mb-1"><strong>Category:</strong>
+                        {% if bus.category == 'express' %}
+                        Express
+                        {% else %}
+                        Non-Express
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-6">
+                    <p class="mb-1"><strong>Total Seats:</strong> {{ bus.no_of_seats }}</p>
+                    <p class="mb-1"><strong>Added On:</strong> {{ bus.added_at|date:"d M, Y" }}</p>
+                    <p class="mb-1"><strong>Last Updated:</strong> {{ bus.update_on|date:"d M, Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5" id="bus-carousel">
+        <div class="h-100">
+            {% include 'bus/includes/busCarousel.html' %}
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-3">
+        <div class="card shadow h-100 p-3">
+            <h5 class="card-title mb-3">Add Bus Image</h5>
+            <form method="post" class="form" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                
+                <button type="submit" class="btn btn-success **btn-sm** w-100">Add Image</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="row justify-content-center p-4 gap-3">
+    <a href="{% url 'edit_bus' bus.id %}" class="col-12 col-sm-5 col-md-4 btn btn-warning **btn-sm** fw-bold">Edit Bus Details</a>
+    <a href="{% url 'del_bus' bus.id %}" class="col-12 col-sm-5 col-md-4 btn btn-danger **btn-sm** fw-bold">Delete Bus</a>
+</div>
+
+{% endblock %}

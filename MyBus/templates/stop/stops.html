@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+Stops
+{% endblock %}
+
+{% block content %}
+<section class="d-flex justify-content-center my-3">
+    <a href="{% url 'add_stop' %}" class="btn btn-success  shadow"
+       style="padding: 10px 50px; font-size: 20px; border-radius: 8px;">
+        Add stop
+    </a>
+</section>
+
+
+
+<section class="container bus-container">
+<div class="row">
+  {% for stop in stops %}
+    {% include "stop/includes/stopcard.html" %}
+  {% empty %}
+    <p>No stop found.</p>
+  {% endfor %}
+</div>
+</section>
+{% endblock %}
