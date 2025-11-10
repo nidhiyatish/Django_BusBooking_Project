@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+{% block title %}My Paid Bookings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4">✅ My Paid Bookings</h2>
+
+  {% if bookings %}
+    <div class="row">
+      {% for booking in bookings %}
+        <div class="col-12 col-md-6 mb-3">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title">
+                Booking #{{ booking.id }} – ₹{{ booking.total_amount }}
+              </h5>
+              <p class="mb-1"><strong>Bus:</strong> {{ booking.schedule.bus.name }}</p>
+              <p class="mb-1"><strong>Route:</strong>
+                {{ booking.schedule.route.source.city }} → {{ booking.schedule.route.destination.city }}
+              </p>
+              <p class="mb-1"><strong>Date:</strong> {{ booking.schedule.date }}</p>
+              <p class="text-success fw-bold mt-2">Paid</p>
+              <a href="{% url 'booking:booking_details' booking.id %}" class="btn btn-primary btn-sm mt-2">View Ticket</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No paid bookings found.</p>
+  {% endif %}
+</div>
+{% endblock %}

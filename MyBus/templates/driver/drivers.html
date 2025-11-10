@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+drivers
+{% endblock %}
+
+{% block content %}
+<section class="d-flex justify-content-center my-3">
+    <a href="{% url 'add_driver' %}" class="btn btn-success  shadow"
+       style="padding: 10px 50px; font-size: 20px; border-radius: 8px;">
+        Add drivers
+    </a>
+</section>
+
+
+
+<section class="container bus-container">
+<div class="row">
+  {% for driver in drivers %}
+    {% include "driver/includes/driver_card.html" %}
+  {% empty %}
+    <p>No driver found.</p>
+  {% endfor %}
+</div>
+</section>
+{% endblock %}

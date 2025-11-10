@@ -1,0 +1,311 @@
+<!-- templates/booking/seat_selection.html -->
+{% extends "base/base.html" %}
+{% load static %}
+{% block title %}Select Seats{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h3>{{ schedule.bus.name }} — {{ schedule.route.source.city|title }} → {{ schedule.route.destination.city|title }}</h3>
+  <p>{{ schedule.date }} | Departure: {{ schedule.departure_time }} | Price per seat: ₹{{ schedule.price }}</p>
+
+  <div id="seat-map" class="mb-3"></div>
+
+  <div class="mb-3">
+    <strong>Selected seats:</strong> <span id="selected-list">None</span>
+  </div>
+
+  <div class="mb-3">
+    <strong>Total:</strong> ₹<span id="total-amount">0</span>
+  </div>
+
+  <button id="bookBtn" class="btn btn-success" disabled>Continue</button>
+</div>
+
+<!-- Passenger Details Modal (Bootstrap) -->
+<div class="modal fade" id="passengerModal" tabindex="-1" aria-labelledby="passengerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="passengerModalLabel">Passenger Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="passengerForm" class="row g-3">
+          <!-- Dynamic passenger fields injected here -->
+          <div id="passengerFieldsContainer" class="col-12"></div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="confirmBookingBtn" class="btn btn-success">
+          <span id="confirmSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+          Confirm & Book
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .seat {
+    display: inline-block;
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 6px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    user-select: none;
+    font-weight: 600;
+  }
+  .seat.avail { background: #e9f7ef; color: #155724; }
+  .seat.booked { background: #f8d7da; color: #721c24; cursor: not-allowed; opacity: 0.8; }
+  .seat.selected { background: #fff3cd; color: #856404; border: 2px solid #ffd966; }
+  .passenger-card { border: 1px solid #e9ecef; padding: 12px; border-radius: 8px; margin-bottom: 12px; background: #f8f9fa; }
+  label.form-label { font-size: 0.9rem; }
+</style>
+
+<script>
+  (function () {
+    const scheduleId = {{ schedule.id }};
+    const pricePerSeat = Number({{ schedule.price }});
+    const seatsData = [
+      {% for seat in seats %}
+        { id: {{ seat.id }}, label: "{{ seat.seat_number|default:seat.id }}" },
+      {% endfor %}
+    ];
+
+    const seatContainer = document.getElementById('seat-map');
+    const selectedListEl = document.getElementById('selected-list');
+    const totalAmountEl = document.getElementById('total-amount');
+    const bookBtn = document.getElementById('bookBtn');
+    const passengerFieldsContainer = document.getElementById('passengerFieldsContainer');
+    const confirmBtn = document.getElementById('confirmBookingBtn');
+    const confirmSpinner = document.getElementById('confirmSpinner');
+
+    let bookedSeatIds = new Set();
+    let selectedSeatIds = new Set();
+
+    // Render seat grid (4 per row)
+    function renderSeats() {
+      seatContainer.innerHTML = '';
+      const perRow = 4;
+      seatsData.forEach((s, idx) => {
+        const div = document.createElement('div');
+        div.className = 'seat avail';
+        div.dataset.id = s.id;
+        div.textContent = s.label;
+
+        if (bookedSeatIds.has(s.id)) {
+          div.className = 'seat booked';
+        } else if (selectedSeatIds.has(s.id)) {
+          div.className = 'seat selected';
+        }
+
+        div.addEventListener('click', () => {
+          if (bookedSeatIds.has(s.id)) return;
+          if (selectedSeatIds.has(s.id)) selectedSeatIds.delete(s.id);
+          else selectedSeatIds.add(s.id);
+          updateSelectionUI();
+          renderSeats();
+        });
+
+        seatContainer.appendChild(div);
+        if ((idx + 1) % perRow === 0) seatContainer.appendChild(document.createElement('br'));
+      });
+    }
+
+    function updateSelectionUI() {
+      if (selectedSeatIds.size === 0) {
+        selectedListEl.textContent = 'None';
+        bookBtn.disabled = true;
+      } else {
+        // Show seat labels nicely
+        const labels = Array.from(selectedSeatIds).map(id => {
+          const s = seatsData.find(x => x.id === id);
+          return s ? 'S' + s.label : 'S' + id;
+        });
+        selectedListEl.textContent = labels.join(', ');
+        bookBtn.disabled = false;
+      }
+      totalAmountEl.textContent = (selectedSeatIds.size * pricePerSeat).toFixed(2);
+    }
+
+    // Fetch booked seats from server
+    function fetchBookedSeats() {
+      fetch(`/booking/api/schedule/${scheduleId}/booked-seats/`)
+        .then(res => res.json())
+        .then(data => {
+          bookedSeatIds = new Set(data.booked_seat_ids || []);
+          // Remove any selected seats that got booked in the meantime
+          Array.from(selectedSeatIds).forEach(sid => { if (bookedSeatIds.has(sid)) selectedSeatIds.delete(sid); });
+          renderSeats();
+          updateSelectionUI();
+        })
+        .catch(() => { /* ignore */ });
+    }
+
+    // CSRF helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Open Bootstrap modal and inject passenger fields (Name+Age+Gender)
+    bookBtn.addEventListener('click', () => {
+      passengerFieldsContainer.innerHTML = '';
+      const seatArray = Array.from(selectedSeatIds);
+
+      // build a fieldset for each seat
+      seatArray.forEach(sid => {
+        const seatObj = seatsData.find(s => s.id === sid);
+        const seatLabel = seatObj ? seatObj.label : sid;
+
+        const block = document.createElement('div');
+        block.className = 'passenger-card row';
+
+        block.innerHTML = `
+          <div class="col-12 mb-2"><strong>Passenger for Seat S${seatLabel}</strong></div>
+
+          <div class="col-md-6">
+            <label class="form-label">Full name</label>
+            <input type="text" class="form-control passenger-name" data-seat="${sid}" placeholder="Full name" required>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Age</label>
+            <input type="number" min="0" max="120" class="form-control passenger-age" data-seat="${sid}" placeholder="Age">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select passenger-gender" data-seat="${sid}">
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
+            </select>
+          </div>
+        `;
+
+        passengerFieldsContainer.appendChild(block);
+      });
+
+      const modalEl = document.getElementById('passengerModal');
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    });
+
+    // Confirm booking: collect passenger objects and POST
+    confirmBtn.addEventListener('click', async () => {
+      // validate inputs
+      const passengerEls = document.querySelectorAll('.passenger-name');
+      const passengers = [];
+      let invalid = false;
+
+      passengerEls.forEach(input => {
+        const seatId = Number(input.dataset.seat);
+        const name = input.value.trim();
+        const ageInput = document.querySelector(`.passenger-age[data-seat="${seatId}"]`);
+        const genderSelect = document.querySelector(`.passenger-gender[data-seat="${seatId}"]`);
+
+        const age = ageInput && ageInput.value ? Number(ageInput.value) : null;
+        const gender = genderSelect ? genderSelect.value : 'O';
+
+        if (!name || name.length < 2) {
+          invalid = true;
+          input.classList.add('is-invalid');
+        } else {
+          input.classList.remove('is-invalid');
+        }
+
+        // validate age if present
+        if (age !== null) {
+          if (!Number.isInteger(age) || age <= 0 || age > 120) {
+            invalid = true;
+            if (ageInput) ageInput.classList.add('is-invalid');
+          } else {
+            if (ageInput) ageInput.classList.remove('is-invalid');
+          }
+        }
+
+        passengers.push({ seat_id: seatId, name: name, age: age, gender: gender });
+      });
+
+      if (invalid) {
+        alert('Please correct the highlighted passenger details.');
+        return;
+      }
+
+      // disable button & show spinner
+      confirmBtn.disabled = true;
+      confirmSpinner.classList.remove('d-none');
+
+      try {
+        const res = await fetch(`/booking/api/schedule/${scheduleId}/create-booking/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+          },
+          body: JSON.stringify({ passengers })
+        });
+
+        // try parse JSON safely
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-json response */ }
+
+        if (!res.ok) {
+          // handle login redirect (Django redirect returns HTML). Conservatively redirect to login.
+          if (res.status === 401 || res.status === 302 || !data) {
+            window.location.href = `/accounts/login/?next=${encodeURIComponent(window.location.pathname)}`;
+            return;
+          }
+
+          if (res.status === 409 && data && data.conflicts) {
+            alert('Some seats were already booked: ' + data.conflicts.join(', ') + '. Please re-select.');
+            // close modal and refresh seat map
+            bootstrap.Modal.getInstance(document.getElementById('passengerModal')).hide();
+            selectedSeatIds.clear();
+            fetchBookedSeats();
+            renderSeats();
+            updateSelectionUI();
+            return;
+          }
+
+          // other errors
+          alert((data && data.error) ? data.error : 'Booking failed. Try again.');
+          return;
+        }
+
+        // success: redirect to confirmation
+        window.location.href = `/booking/${data.booking_id}/confirmation/`;
+      } catch (err) {
+        console.error(err);
+        alert('Booking failed due to network/server error.');
+      } finally {
+        confirmBtn.disabled = false;
+        confirmSpinner.classList.add('d-none');
+      }
+    });
+
+    // initial load & polling
+    renderSeats();
+    fetchBookedSeats();
+    setInterval(fetchBookedSeats, 10000);
+  })();
+</script>
+{% endblock %}

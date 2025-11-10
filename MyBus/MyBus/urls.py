@@ -26,6 +26,21 @@ urlpatterns = [
     path('bus/', include('Bus.urls')),
     path('stop/', include('stop.urls')),
     path('route/', include('route.urls')),
+    path('schedule/', include('schedule.urls')),
+    path('driver/', include('driver.urls')),
+    
+    path('booking/', include('booking.urls')),
+
+
+
+    # auth
+    path('accounts/', include('accounts.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+
+
+    path('',include('payments.urls')),
+
+
 ]
 
 if settings.DEBUG:

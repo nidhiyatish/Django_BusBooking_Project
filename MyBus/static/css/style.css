@@ -43,8 +43,8 @@ main {
 /* Fix all cards to same height */
 .carousel-cards-container {
 
-    /*div.card {
-            height: 160px;*/
+    div.card {
+            height: 300px;
     card .card-img-top {
         height: 120px !important;
         width: 100%;
@@ -109,4 +109,5 @@ main {
 
 .bus-card .btn:hover {
   transform: scale(1.05);
+}
 }

@@ -18,19 +18,37 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {% if user.is_authenticated %}
+            {{user.username.capitalize}}
+            {% else %}
             Accounts
+            {% endif %}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="">login</a></li>
-            <li><a class="dropdown-item" href="#">register</a></li>
+            {% if user.is_authenticated %}
+            <li>
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item">Logout</button>
+              </form>
+            </li>
+            <li>
+              <a href="{% url 'booking:bookings' %}" class="dropdown-item">My Tickets</a>
+            </li>
+
+            {% else %}
+            <li><a class="dropdown-item" href="{% url 'signin' %}">Login</a></li>
+            <li><a class="dropdown-item" href="{% url 'signup' %}">Register</a></li>
+            {% endif %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
           </ul>
         </li>
         <!-- Site Management -->
+         {% if user.is_staff %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Manage
+          Staff Access
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{% url 'carousels_page' %}">Carousel</a></li>
@@ -38,6 +56,8 @@
             <li><a class="dropdown-item" href="{% url 'view_buses' %}">Bus</a></li>
             <li><a class="dropdown-item" href="{% url 'view_stops' %}">Stop</a></li>
             <li><a class="dropdown-item" href="{% url 'view_routes' %}">Routes</a></li>
+            <li><a class="dropdown-item" href="{% url 'view_schedules' %}">Schedules</a></li>
+            <li><a class="dropdown-item" href="{% url 'view_drivers' %}">Drivers</a></li>
             
 
               <hr class="dropdown-divider">
@@ -45,6 +65,7 @@
             <li><a class="dropdown-item" href="#">Something else here</a></li>
           </ul>
         </li>
+        {% endif %}
 
         <!-- End Site management -->
 

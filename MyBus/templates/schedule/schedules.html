@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+Schedule
+{% endblock %}
+
+{% block content %}
+
+{% if user.is_staff %}
+<section class="d-flex justify-content-center my-3">
+    <a href="{% url 'add_schedule' %}" class="btn btn-success  shadow"
+       style="padding: 10px 50px; font-size: 20px; border-radius: 8px;">
+        Add Schedule
+    </a>
+</section>
+{% endif %}
+
+<div class="row">
+  {% for schedule in schedules %}
+    {% include "schedule/includes/scheduleCard.html" %}
+  {% empty %}
+    <p>No bus found.</p>
+  {% endfor %}
+</div>
+</section>
+{% endblock %}

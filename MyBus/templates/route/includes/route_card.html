@@ -14,7 +14,7 @@
     <div class="col-md-6 text-center">
       <div class="card-body">
         <h5 class="card-title fw-bold mb-1">
-          {{ route.source.city|capfirst }} to {{ route.destination.city|capfirst }}
+          {{ route.source.city|capfirst }} {{route.source.name}} to {{ route.destination.city|capfirst }} {{route.destination.name}}
         </h5>
         <p class="card-text text-muted mb-2">{{ route.distance }} km</p>
         <p class="card-text mb-0">

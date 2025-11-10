@@ -1,13 +1,101 @@
 {% extends 'base/base.html' %}
 
-{% block title %}
-Home
-{% endblock %}
+{% block title %}Home{% endblock %}
+
 {% block content %}
 
+<section id="home-carousel" class="position-relative">
+  {% include "mainapp/includes/carousel.html" %}
 
-<section id="home-carousel">
-    {% include "mainapp/includes/carousel.html" %}
-    
+  <section id="schedule-search-form" class="py-4 position-absolute z-4 top-50 start-50 translate-middle w-100" style="z-index: 1050;">>
+    <div class="container">
+      <div class="p-4 rounded shadow-sm" style="background-color: #d5dde6;">
+
+        <h4 class="mb-3">Find Bus</h4>
+
+        <form id="findBusForm" autocomplete="off">
+          <div class="row g-3">
+
+            <!-- Source City -->
+            <div class="col-12 col-md-4">
+              <label for="source" class="form-label">Source City</label>
+              <input list="citiesList" id="source" name="source" class="form-control" placeholder="Enter source city"
+                required>
+            </div>
+
+            <!-- Destination City -->
+            <div class="col-12 col-md-4">
+              <label for="destination" class="form-label">Destination City</label>
+              <input list="citiesList" id="destination" name="destination" class="form-control"
+                placeholder="Enter destination city" required>
+            </div>
+
+            <!-- Travel Date -->
+            <div class="col-12 col-md-4">
+              <label for="travelDate" class="form-label">Date</label>
+              <input type="date" id="travelDate" name="travel_date" class="form-control" required>
+            </div>
+
+            <!-- Datalist of Cities -->
+            <datalist id="citiesList">
+              {% for city in cities %}
+              <option value="{{ city|title }}"></option>
+              {% endfor %}
+            </datalist>
+
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
 </section>
+
+<!-- Schedules Result Section -->
+<section id="schedules-listing" class="py-4">
+  <div class="container text-center text-muted">
+    <p>Search a route to see available buses</p>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('findBusForm');
+  const schedulesContainer = document.querySelector("#schedules-listing .container");
+
+  let typingTimer;
+  function fetchSchedules() {
+    clearTimeout(typingTimer);
+
+    typingTimer = setTimeout(() => {
+      const formData = new FormData(form);
+      const source = formData.get('source');
+      const destination = formData.get('destination');
+
+      // prevent same source & destination
+      if (source && destination && source.trim().toLowerCase() === destination.trim().toLowerCase()) {
+        schedulesContainer.innerHTML = `<p class="text-danger">Source & Destination cannot be same.</p>`;
+        return;
+      }
+
+      schedulesContainer.innerHTML = `<p>Searching buses...</p>`; // Loading text
+
+      const params = new URLSearchParams(formData).toString();
+
+      fetch(`schedule/ajax/search-schedules/?${params}`)
+        .then(res => res.json())
+        .then(data => {
+          schedulesContainer.innerHTML = data.html;
+        })
+        .catch(() => {
+          schedulesContainer.innerHTML = `<p class="text-danger">Error fetching schedules.</p>`;
+        });
+
+    }, 400); // debounce for smoother typing
+  }
+
+  // Auto update on typing or change
+  form.addEventListener('input', fetchSchedules);
+  form.addEventListener('change', fetchSchedules);
+</script>
+
 {% endblock %}

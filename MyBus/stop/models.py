@@ -94,5 +94,11 @@ class Stop(models.Model):
     def __str__(self):
         return f"Stop :  {self.name.capitalize()} | City : {self.city.capitalize()}"
 
-    
+    @classmethod
+    def cities(cls):
+        city_names = []
+        for city in cls.CITY_CHOICES:
+            city_names.append(city[0])
+        return city_names
+
     

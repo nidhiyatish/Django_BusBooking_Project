@@ -1,9 +1,119 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
-{% block title %}
-Home
-{% endblock %}
 {% block content %}
-This is the about page
+
+<div class="container py-5">
+
+    <!-- Page Heading -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">About MyBus</h1>
+        <p class="text-muted mt-2">Your reliable partner for safe and comfortable travel</p>
+    </div>
+
+    <!-- Intro Section -->
+    <div class="row mb-4">
+        <div class="col-md-6 d-flex align-items-center">
+            <div>
+                <h3 class="fw-semibold">What is MyBus?</h3>
+                <p>
+                    MyBus is a user-friendly online bus booking system developed using Django.
+                    It makes intercity travel easy by helping passengers search routes, check seat availability, and book tickets online with a few clicks.
+                </p>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Mission -->
+    <div class="bg-light p-4 rounded mb-5 shadow-sm">
+        <h3 class="fw-semibold">Our Mission</h3>
+        <p class="mb-0">
+            To provide a safe, reliable, and convenient bus booking experience through a modern digital platform that makes transportation accessible for everyone.
+        </p>
+    </div>
+
+    <!-- Who Can Use -->
+    <div class="mb-5">
+        <h3 class="fw-semibold mb-3">Who Can Use MyBus?</h3>
+        <ul class="list-group">
+            <li class="list-group-item">Passengers – To search and book bus tickets with ease</li>
+            <li class="list-group-item">Bus Owners/Admin – To manage buses, routes, schedules & bookings</li>
+            <li class="list-group-item">Operators – To monitor bus status and passenger data</li>
+        </ul>
+    </div>
+
+    <!-- Features -->
+    <div class="mb-5">
+        <h3 class="fw-semibold mb-3">Key Features</h3>
+
+        <div class="row g-3">
+            {% comment %} Feature Card {% endcomment %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">🚌 Bus Management</h5>
+                        <p class="card-text">Add and manage bus details, categories, and total seats.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">🗺️ Route Management</h5>
+                        <p class="card-text">Set routes, stops, source, and destination for bus services.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">💺 Seat Selection</h5>
+                        <p class="card-text">Allow users to choose seats before completing booking.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">🕒 Schedule Management</h5>
+                        <p class="card-text">Manage bus schedules, timings, and service days.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">💳 Online Booking</h5>
+                        <p class="card-text">Secure ticket booking with instant confirmation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">🔐 Admin Panel</h5>
+                        <p class="card-text">Full control of system data using Django admin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+   
+    <!-- Contact Section -->
+    <div class="text-center">
+        <h4 class="fw-semibold">Need Help?</h4>
+        <p class="mb-2">Feel free to contact us for support or feedback.</p>
+        <p class="fw-bold mb-0">Email: mybus123@mybus.com</p>
+        <p class="fw-bold">Phone: +91 6795568909</p>
+    </div>
+</div>
 
 {% endblock %}

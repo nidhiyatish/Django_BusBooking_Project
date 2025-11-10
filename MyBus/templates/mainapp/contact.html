@@ -1,9 +1,55 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
-{% block title %}
-Home
-{% endblock %}
 {% block content %}
-This is the contact page
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Get in Touch</h2>
+        <p class="text-muted">We're here to help with bookings, support, or partnership queries</p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Customer Support -->
+        <div class="col-md-4">
+            <div class="p-4 border rounded h-100 bg-white">
+                <h5 class="fw-semibold mb-3"><i class="bi bi-telephone-fill me-2"></i>Customer Support</h5>
+                <p class="text-muted small">Help with bookings or travel queries.</p>
+                <p class="mb-1"><strong>Email:</strong> mybus123@mybus.com</p>
+                <p class="mb-1"><strong>Phone:</strong> +91 698765687</p>
+                <p class="mb-0"><strong>Timing:</strong> 9:00 AM – 9:00 PM</p>
+            </div>
+        </div>
+
+        <!-- Corporate Office -->
+        <div class="col-md-4">
+            <div class="p-4 border rounded h-100 bg-white">
+                <h5 class="fw-semibold mb-3"><i class="bi bi-geo-alt-fill me-2"></i>Corporate Office</h5>
+                <p class="text-muted small mb-2">Visit or write to our office.</p>
+                <address class="text-muted small mb-0">
+                    MyBus Travel Services Pvt. Ltd.<br>
+                    123, Main Highway Road,<br>
+                    Near Central Bus Terminal,<br>
+                    City Name – Pincode, State, India
+                </address>
+            </div>
+        </div>
+
+        <!-- Owners & Partners -->
+        <div class="col-md-4">
+            <div class="p-4 border rounded h-100 bg-white">
+                <h5 class="fw-semibold mb-3"><i class="bi bi-people-fill me-2"></i>Bus Owners & Partners</h5>
+                <p class="text-muted small">For partnership & business queries.</p>
+                <p class="mb-1"><strong>Email:</strong> partners@mybus.com</p>
+                <p class="mb-0"><strong>Phone:</strong> +91 687789080</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}

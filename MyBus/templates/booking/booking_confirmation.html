@@ -1,0 +1,117 @@
+{% extends "base/base.html" %}
+{% block title %}Booking Confirmation{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="card shadow-lg border-0 p-4" style="border-radius: 14px;">
+
+    <div class="text-center mb-4">
+      <h2 class="fw-bold text-success">Booking Confirmation & Payment</h2>
+      <p class="text-muted">Your booking has been successfully created. Review details below.</p>
+    </div>
+
+    <!-- Booking Summary -->
+    <div class="row g-4">
+      
+      <!-- Left Side -->
+      <div class="col-lg-6">
+        <div class="p-3 bg-light rounded h-100" style="border-left: 5px solid #28a745;">
+          <h5 class="mb-3">🧾 Booking Details</h5>
+          <p class="mb-1"><strong>Ticket No:</strong> #{{ booking.id }}</p>
+          <p class="mb-1"><strong>Booked By:</strong> {{ booking.user.username }}</p>
+          <p class="mb-1"><strong>Booking Date:</strong> {{ booking.booked_at|date:"d M Y, h:i A" }}</p>
+          <p class="mb-1"><strong>Payment Status:</strong>
+            <span class="badge 
+              {% if booking.payment_status == 'paid' %} bg-success 
+              {% elif booking.payment_status == 'pending' %} bg-warning text-dark
+              {% else %} bg-danger {% endif %}">
+              {{ booking.payment_status|title }}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Side -->
+      <div class="col-lg-6">
+        <div class="p-3 bg-light rounded h-100" style="border-left: 5px solid #007bff;">
+          <h5 class="mb-3">🚌 Travel Information</h5>
+          <p class="mb-1"><strong>Route:</strong> {{ booking.schedule.route.source.city }} → {{ booking.schedule.route.destination.city }}</p>
+          <p class="mb-1"><strong>Travel Date:</strong> {{ booking.schedule.date }}</p>
+          <p class="mb-1"><strong>Departure:</strong> {{ booking.schedule.departure_time }}</p>
+          <p class="mb-1"><strong>Bus:</strong> {{ booking.schedule.bus.name }} ({{ booking.schedule.bus.reg_no }})</p>
+        </div>
+      </div>
+
+      <!-- Seats -->
+      <div class="col-lg-6">
+        <div class="p-3 bg-light rounded h-100" style="border-left: 5px solid #ffc107;">
+          <h5 class="mb-3">💺 Seats</h5>
+          {% for sb in booking.seat_bookings.all %}
+            <span class="badge bg-primary me-1 mb-1">Seat {{ sb.seat.id }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Fare -->
+      <div class="col-lg-6">
+        <div class="p-3 bg-light rounded h-100" style="border-left: 5px solid #6f42c1;">
+          <h5 class="mb-3">💰 Fare</h5>
+          <p class="fs-4 fw-bold">₹{{ booking.total_amount }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Passenger Details -->
+    <hr class="my-4">
+    <div class="mt-4">
+      <h4 class="fw-bold mb-3">👨‍👩‍👧 Passenger Details</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Seat No.</th>
+              <th>Passenger Name</th>
+              <th>Age</th>
+              <th>Gender</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for sb in booking.seat_bookings.all %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ sb.seat.id }}</td>
+              <td>{{ sb.passenger_name }}</td>
+              <td>{{ sb.passenger_age }}</td>
+              <td>{{ sb.passenger_gender }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    {% if booking.payment_status != "paid" %}
+      <div class="text-center">
+        <a href="{% url 'payment:create_razorpay_order' booking.id %}"
+           class="btn btn-success btn-lg px-5 py-2">
+          💳 Proceed to Payment
+        </a>
+      </div>
+    {% else %}
+      <p class="text-center text-success fw-bold fs-5">
+        ✅ Payment Completed Successfully
+      </p>
+      <div class="text-center mt-3">
+        <a href="{% url 'download_ticket' booking.id %}" class="btn btn-primary px-4">
+          🧾 Download Ticket
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
